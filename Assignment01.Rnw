@@ -50,6 +50,6 @@ stargazer(resreg)
 
 
 @
-
+blha blah
 
 \end{document}
