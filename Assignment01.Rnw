@@ -1,0 +1,55 @@
+\documentclass{article}
+\title{Assignment 01}
+\author{Chetan Chitre}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+\section {Question 1}
+\subsection{Part - a}
+
+<<echo=FALSE, eval=TRUE, results=tex, pdf=TRUE>>=
+library(foreign)
+library(stargazer)
+library(ggplot2)
+german<- read.dta("C:/Users/Chitre/SkyDrive/Adv Trics Audit/Assignment 01/german.dta")
+reg1<- lm(lnw~ed, german)
+stargazer(reg1, title="Regression of log-wages on years of education", covariate.labels=c("Years of Education") )
+@
+
+<<echo=FALSE, eval=TRUE, fig=TRUE>>=
+p1<-ggplot(german, aes(x=ed, y=lnw)) + geom_point(shape=1) +geom_smooth(method=lm)
+p1<- p1+labs(x="Years of Education", y="Log-wages" )
+p1<- p1+labs(title="Scatter Plot of Log of wages and Years of education")
+print(p1)
+@
+
+As can be seen from the scatter plot of log of wages and years of education - there is heteroskedasticity in the data - i.e. as years of education increase the variance of log of wages reduces.
+
+<<echo=FALSE, eval=TRUE, results=tex, pdf=TRUE>>=
+library(robustbase)
+reg2<- lmrob(lnw~ ed + exp + exp2 + female + mar + femmar, german)
+stargazer(reg2, title = "Multivariate Regression with Robust Standard Errors", covariate.labels = c("Years of education", "Experience", "Experience (sq)", "Gender (Female)", "Marital Status", "Gender*Marital Status (F*M)"), dep.var.labels = c("Log of wages"))
+
+@
+
+YET TO WRITE LAST PART OF Q1(a)
+
+\subsection{Part - b}
+Partialling out method (Frisch-Waugh-Lovell Theorem)
+
+<<echo=FALSE, eval=TRUE, results=tex, pdf=TRUE>>=
+library(stats)
+reg3<- lm(lnw~ exp + exp2 + female + mar + femmar, german)
+resids1<-residuals(reg3)
+reg4<- lm(ed~ exp + exp2 + female + mar + femmar, german)
+resids2<-residuals(reg4)
+resreg<- lmrob(resids1~resids2)
+stargazer(resreg)
+
+
+
+@
+
+
+\end{document}
